@@ -33,8 +33,10 @@ extern exit
 %define BYTE	1
 
 global main
-
 section .bss
+point: resb 1
+taille: resb 20
+
 display_name:	resq	1
 screen:			resd	1
 depth:         	resd	1
@@ -46,11 +48,15 @@ gc:		resq	1
 
 section .data
 
-reponse1: db "Coordonnées: (%d,%d), (%d,%d)",10,0
+reponse1: db "Coordonnées: %d",10,0
+question: db "Taille de la fenetre : ",0
+
+reponse: db "nombre aléatoire avec modulo = %d", 10,0
+
 
 event:		times	24 dq 0
 
-x1:	dd	0
+x1:	dd 0
 x2:	dd	0
 y1:	dd	0
 y2:	dd	0
@@ -66,65 +72,70 @@ section .text
 ; la fonction pour générer des nombres aléatoires entiers
 ; prend en entrée un pointeur vers un espace de stockage pour le résultat
 ; et retourne ce dernier dans EAX
-generer_nombre_aleatoire:
+global aleatoire
+
+aleatoire:
 push rbp
-mov rax,0
-rdrand ax
-jnc lbl_relancer
-mov [rdi],ax
-jmp lbl_fin
-lbl_relancer:
-call generer_nombre_aleatoire
-lbl_fin:
+mov rdi,0
+mov byte[taille],400
+movzx rdi, byte[taille]
+coord_al:
+mov  ax, 0
+rdrand ax; génération d'un nombre aléatoire
+
+jnc coord_al; si Cf = 0 on saute a coord_al
+modulo:
+
+mov bx, di
+
+mov dx, 0
+
+div bx
+
+mov ax, dx
+
+stop:
+
 pop rbp
+
 ret
-
-
-	
-;##################################################
-;########### PROGRAMME PRINCIPAL ##################
-;##################################################
 
 main:
 
-; appeler la fonction pour générer les coordonnées x1 et y1
-lea rdi, [x1]
-call generer_nombre_aleatoire
-lea rdi, [y1]
-call generer_nombre_aleatoire
+push rbp
 
-; utiliser un modulo pour obtenir des valeurs correctes
-mov cx,65535
-mov ax,[x1]
-div cx
-mov [x1],dx
-mov ax,[y1]
-div cx
-mov [y1],dx
 
-; appeler la fonction pour générer les coordonnées x2 et y2
-lea rdi, [x2]
-call generer_nombre_aleatoire
-lea rdi, [y2]
-call generer_nombre_aleatoire
 
-; utiliser un modulo pour obtenir des valeurs correctes
-mov cx,65535
-mov ax,[x2]
-div cx
-mov [x2],dx
-mov ax,[y2]
-div cx
-mov [y2],dx
-
-; afficher les coordonnées x1, y1 et x2, y2 dans reponse1
-mov rdi,reponse1
-movzx rsi,word[x1]
-movzx rdx,word[y1]
-movzx rcx,word[x2]
-movzx r8,word[y2]
+call aleatoire
+mov [x1], ax
+mov rdi, reponse
+mov rsi, [x1] 
 mov rax,0
 call printf
+
+call aleatoire
+mov [y1], ax
+mov rdi, reponse
+mov rsi, [y1] 
+mov rax,0
+call printf
+
+
+call aleatoire
+mov [x2], ax
+mov rdi, reponse
+mov rsi, [x2] 
+mov rax,0
+call printf
+
+call aleatoire
+mov [y2], ax
+mov rdi, reponse
+mov rsi, [y2] 
+mov rax,0
+call printf
+
+
 
 
 
@@ -260,10 +271,6 @@ mov rsi,qword[gc]
 mov edx,0x000000	; Couleur du crayon ; noir
 call XSetForeground
 ; coordonnées de la ligne 1 (noire)
-mov dword[x1],50
-mov dword[y1],50
-mov dword[x2],200
-mov dword[y2],350
 ; dessin de la ligne 1
 mov rdi,qword[display_name]
 mov rsi,qword[window]
