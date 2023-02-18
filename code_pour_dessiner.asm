@@ -60,6 +60,10 @@ x1:	dd 0
 x2:	dd	0
 y1:	dd	0
 y2:	dd	0
+x3:	dd 0
+x4:	dd	0
+y3:	dd	0
+y4:	dd	0
 
 section .text
 
@@ -108,37 +112,27 @@ push rbp
 
 call aleatoire
 mov [x1], ax
-mov rdi, reponse
-mov rsi, [x1] 
-mov rax,0
-call printf
+mov rsi, [x1]
 
 call aleatoire
 mov [y1], ax
-mov rdi, reponse
-mov rsi, [y1] 
-mov rax,0
-call printf
-
+mov rsi, [y1]
 
 call aleatoire
 mov [x2], ax
-mov rdi, reponse
-mov rsi, [x2] 
-mov rax,0
-call printf
+mov rsi, [x2]
 
 call aleatoire
 mov [y2], ax
-mov rdi, reponse
-mov rsi, [y2] 
-mov rax,0
-call printf
+mov rsi, [y2]
 
+call aleatoire
+mov [x3], ax
+mov rsi, [x3]
 
-
-
-
+call aleatoire
+mov [y3], ax
+mov rsi, [y3]
 
 
 
@@ -265,12 +259,11 @@ mov ecx,200	; coordonnée source en x
 mov r8d,250	; coordonnée source en y
 call XDrawPoint
 
-;couleur de la ligne 1
+;couleur de la ligne 1 (noir)
 mov rdi,qword[display_name]
 mov rsi,qword[gc]
 mov edx,0x000000	; Couleur du crayon ; noir
 call XSetForeground
-; coordonnées de la ligne 1 (noire)
 ; dessin de la ligne 1
 mov rdi,qword[display_name]
 mov rsi,qword[window]
@@ -286,21 +279,33 @@ mov rdi,qword[display_name]
 mov rsi,qword[gc]
 mov edx,0xFFAA00	; Couleur du crayon ; orange
 call XSetForeground
-; coordonnées de la ligne 1 (noire)
-mov dword[x1],300
-mov dword[y1],50
-mov dword[x2],50
-mov dword[y2],350
+; coordonnées de la ligne 2 (orange)
+mov dword[x3],x1
+mov dword[y3],y1
 ; dessin de la ligne 1
 mov rdi,qword[display_name]
 mov rsi,qword[window]
 mov rdx,qword[gc]
 mov ecx,dword[x1]	; coordonnée source en x
 mov r8d,dword[y1]	; coordonnée source en y
-mov r9d,dword[x2]	; coordonnée destination en x
-push qword[y2]		; coordonnée destination en y
 call XDrawLine
 
+
+;couleur de la ligne 3 (verte)
+mov rdi,qword[display_name]
+mov rsi,qword[gc]
+mov edx,0x00FF00	; Couleur du crayon ; vert
+call XSetForeground
+; coordonnées de la ligne 3 (orange)
+mov dword[x4],x2
+mov dword[y4],y2
+; dessin de la ligne 1
+mov rdi,qword[display_name]
+mov rsi,qword[window]
+mov rdx,qword[gc]
+mov ecx,dword[x2]	; coordonnée source en x
+mov r8d,dword[y2]	; coordonnée source en y
+call XDrawLine
 
 ; ############################
 ; # FIN DE LA ZONE DE DESSIN #
