@@ -274,12 +274,7 @@ mov r9d,dword[x2]	; coordonnée destination en x
 push qword[y2]		; coordonnée destination en y
 call XDrawLine
 
-;couleur de la ligne 2
-mov rdi,qword[display_name]
-mov rsi,qword[gc]
-mov edx,0xFFAA00	; Couleur du crayon ; orange
-call XSetForeground
-; coordonnées de la ligne 2 (orange)
+; coordonnées de la ligne 2
 mov dword[x3],x1
 mov dword[y3],y1
 ; dessin de la ligne 1
@@ -290,13 +285,7 @@ mov ecx,dword[x1]	; coordonnée source en x
 mov r8d,dword[y1]	; coordonnée source en y
 call XDrawLine
 
-
-;couleur de la ligne 3 (verte)
-mov rdi,qword[display_name]
-mov rsi,qword[gc]
-mov edx,0x00FF00	; Couleur du crayon ; vert
-call XSetForeground
-; coordonnées de la ligne 3 (orange)
+; coordonnées de la ligne 3
 mov dword[x4],x2
 mov dword[y4],y2
 ; dessin de la ligne 1
